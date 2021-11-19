@@ -1,0 +1,344 @@
+[
+    {
+        "id": "bd6b2fb9c08f5941",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "a55fef9a2e8b1008",
+        "type": "cloudantplus-selector in",
+        "z": "bd6b2fb9c08f5941",
+        "name": "",
+        "cloudant": "7a6b63de7c976871",
+        "database": "employee",
+        "service": "_ext_",
+        "search": "_id_",
+        "design": "",
+        "index": "",
+        "x": 500,
+        "y": 60,
+        "wires": [
+            [
+                "80335b4211ba9d68",
+                "774fc7df1a111bdb"
+            ]
+        ]
+    },
+    {
+        "id": "80335b4211ba9d68",
+        "type": "debug",
+        "z": "bd6b2fb9c08f5941",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 930,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "534c6df5e6e7f08a",
+        "type": "debug",
+        "z": "bd6b2fb9c08f5941",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 410,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "e9abf78893d36dde",
+        "type": "debug",
+        "z": "bd6b2fb9c08f5941",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 710,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "774fc7df1a111bdb",
+        "type": "function",
+        "z": "bd6b2fb9c08f5941",
+        "name": "",
+        "func": "msg.payload = msg.payload.conv\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 530,
+        "y": 180,
+        "wires": [
+            [
+                "e9abf78893d36dde",
+                "3007d65b722eab53"
+            ]
+        ]
+    },
+    {
+        "id": "3007d65b722eab53",
+        "type": "watson-tone-analyzer-v3",
+        "z": "bd6b2fb9c08f5941",
+        "name": "",
+        "tones": "all",
+        "sentences": "true",
+        "contentType": "false",
+        "tone-method": "customerEngagementTone",
+        "interface-version": "2017-09-21",
+        "inputlang": "en",
+        "service-endpoint": "https://api.au-syd.tone-analyzer.watson.cloud.ibm.com/instances/2d304b73-6e43-46b5-8eda-10af4a6c7987",
+        "x": 750,
+        "y": 120,
+        "wires": [
+            [
+                "b68dfd039efea806",
+                "f0cd2af4b42d7ade"
+            ]
+        ]
+    },
+    {
+        "id": "b68dfd039efea806",
+        "type": "debug",
+        "z": "bd6b2fb9c08f5941",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 960,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "f0cd2af4b42d7ade",
+        "type": "function",
+        "z": "bd6b2fb9c08f5941",
+        "name": "",
+        "func": "var p=0\nvar ex=0\nvar fr =0;\nvar ip=0;\nvar s =0;\nvar sa=0;\nvar sy=0\nvar n=\"\"\nvar ut=msg.response.utterances_tone;\n//msg.payload=tone.length\nfor (i=0;i<ut.length;i++){\n    var tone=msg.response.utterances_tone[i].tones.length\n    for (j=0;j<tone;j++){\n        n=msg.response.utterances_tone[i].tones[j].tone_name;\n       if(msg.response.utterances_tone[i].tones[j].tone_name==\"Polite\"){\n           p=p+1\n       }\n       else if(msg.response.utterances_tone[i].tones[j].tone_name==\"Sad\"){\n           s=s+1\n       }\n       else if(msg.response.utterances_tone[i].tones[j].tone_name==\"Frustrated\"){\n           fr=fr+1\n       }\n       else if(msg.response.utterances_tone[i].tones[j].tone_name==\"Impolite\"){\n           ip=ip+1\n       }\n       else if(msg.response.utterances_tone[i].tones[j].tone_name==\"Satisfied\"){\n           sa=sa+1\n       }\n        else if(msg.response.utterances_tone[i].tones[j].tone_name==\"Sympathetic\"){\n           sy=sy+1\n       }\n        \n    }\n}//\n// \"data\": [ [p], [s], [fr],[ip],[sa],[sy]],\n//msg.payload=n\nmsg.payload=[{\"series\":[\"Data\"],\n    \"data\": [ p, s, fr,ip,sa,sy],\n    \"labels\": [ \"polite\",\"sad\", \"frustrated\",\"impolite\",\"satisfied\",\"sympathetic\"]}]\n//msg.payload={\"polite\":p,\"sad\":s,\"frustrated\":fr,\"impolite\":ip,\"satisfied\":sa,\"sympathetic\":sy}\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 820,
+        "y": 220,
+        "wires": [
+            [
+                "787010a7c0df0dbc",
+                "42c899b4a50df66b",
+                "cc39d3e5ddd91a36"
+            ]
+        ]
+    },
+    {
+        "id": "787010a7c0df0dbc",
+        "type": "debug",
+        "z": "bd6b2fb9c08f5941",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1080,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "9446641398aa18c0",
+        "type": "ui_dropdown",
+        "z": "bd6b2fb9c08f5941",
+        "name": "",
+        "label": "",
+        "tooltip": "",
+        "place": "Select option",
+        "group": "1df819f0faf7f724",
+        "order": 0,
+        "width": "7",
+        "height": "1",
+        "passthru": true,
+        "multiple": false,
+        "options": [
+            {
+                "label": "Mahankali Surya Tej",
+                "value": "Mahankali Surya Tej",
+                "type": "str"
+            },
+            {
+                "label": "Pradeepthi",
+                "value": "Pradeepthi",
+                "type": "str"
+            },
+            {
+                "label": "Rincy",
+                "value": "Rincy",
+                "type": "str"
+            },
+            {
+                "label": "Supriya",
+                "value": "Supriya",
+                "type": "str"
+            }
+        ],
+        "payload": "",
+        "topic": "topic",
+        "topicType": "msg",
+        "className": "",
+        "x": 310,
+        "y": 180,
+        "wires": [
+            [
+                "a55fef9a2e8b1008",
+                "534c6df5e6e7f08a"
+            ]
+        ]
+    },
+    {
+        "id": "42c899b4a50df66b",
+        "type": "ui_chart",
+        "z": "bd6b2fb9c08f5941",
+        "name": "",
+        "group": "b1f690d9fdb0bb4c",
+        "order": 0,
+        "width": "0",
+        "height": "0",
+        "label": "Sentiment Analysis",
+        "chartType": "bar",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "10",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 990,
+        "y": 320,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "cc39d3e5ddd91a36",
+        "type": "function",
+        "z": "bd6b2fb9c08f5941",
+        "name": "",
+        "func": "msg.payload=msg.response.utterances_tone\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 850,
+        "y": 440,
+        "wires": [
+            [
+                "22c57a2e78db3a5d"
+            ]
+        ]
+    },
+    {
+        "id": "22c57a2e78db3a5d",
+        "type": "cloudantplus out",
+        "z": "bd6b2fb9c08f5941",
+        "name": "",
+        "cloudant": "7c9a7f38edc4b039",
+        "database": "sentiment",
+        "service": "_ext_",
+        "payonly": false,
+        "operation": "insert",
+        "x": 1000,
+        "y": 500,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "7a6b63de7c976871",
+        "type": "cloudantplus-selector",
+        "host": "https://apikey-v2-szly35jxdp2h20ydmekr4st4xqtr5e09c9ctwcb36km:1d07c6532c386c7209ffceb88857bbd8@718a5521-f0e9-4d5d-849c-0fb6555be5e9-bluemix.cloudantnosqldb.appdomain.cloud",
+        "name": ""
+    },
+    {
+        "id": "1df819f0faf7f724",
+        "type": "ui_group",
+        "name": "Select Employee",
+        "tab": "e5063b10bb7b5ccc",
+        "order": 1,
+        "disp": true,
+        "width": "7",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "b1f690d9fdb0bb4c",
+        "type": "ui_group",
+        "name": "Sentiment of Conversation",
+        "tab": "e5063b10bb7b5ccc",
+        "order": 1,
+        "disp": true,
+        "width": "10",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "7c9a7f38edc4b039",
+        "type": "cloudantplus",
+        "host": "https://apikey-v2-szly35jxdp2h20ydmekr4st4xqtr5e09c9ctwcb36km:1d07c6532c386c7209ffceb88857bbd8@718a5521-f0e9-4d5d-849c-0fb6555be5e9-bluemix.cloudantnosqldb.appdomain.cloud",
+        "name": ""
+    },
+    {
+        "id": "e5063b10bb7b5ccc",
+        "type": "ui_tab",
+        "name": "Sentiment Analysis ",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    }
+]
